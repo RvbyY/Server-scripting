@@ -8,7 +8,8 @@ namespace ServerDetecionApp
         public MainForm()
         {
             InitializeComponent();
-            comboBoxServerType.Items.AddRange(new string[]{"Active Directory", "mssql"});
+            comboBoxServerType.Items.AddRange(new string[]{"Active Directory",
+                "mssql", "windows server 2019", "windows server 2021"});
         }
 
         private void ButtonDetect_Click(object sender, EventArgs e)
@@ -26,6 +27,10 @@ namespace ServerDetecionApp
                     return "Active Directory Server is running on this device.";
                 case "mssql":
                     return "mssql Server is running on this device.";
+                case "windows server 2019":
+                    return "windows server 2019 is running on this device";
+                case "windows server 2021":
+                    return "windows server 2021 is running on this device";
                 default:
                     return "Basic server is running on this device.";
             }
