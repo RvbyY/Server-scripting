@@ -26,19 +26,19 @@ namespace ServerDetecionApp
             {
                 case "Active Directory":
                     /*scriptpath*/
-                    return "Active Directory Server is running on this device.";
+                    break;
                 case "mssql":
                     /*scriptpath*/
-                    return "mssql Server is running on this device.";
+                    break;
                 case "windows server 2019":
                     /*scriptpath*/
-                    return "windows server 2019 is running on this device";
+                    break;
                 case "windows server 2021":
                     /*scriptpath*/
-                    return "windows server 2021 is running on this device";
+                    break;
                 default:
                     scriptpath = "C:\\Users\\Public\\Server-scripting\\smbv1checker.ps1";
-                    return "Basic server is running on this device.";
+                    break;
             }
         }
     }
