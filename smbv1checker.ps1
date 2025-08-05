@@ -134,7 +134,7 @@ function IsAntivirusOn
 
     $output | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     foreach ($Anti in $Antis) {
-        $Anti | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+        "$($Anti.displayName)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     }
 }
 
@@ -154,6 +154,30 @@ function GetUserLastLogin
 
 <#
 .DESCRIPTION
+display users last pwd set
+#>
+function GetUserLastPwdSet
+{
+    $users = Get-LocalUser
+
+    "=== Last pwd set ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    foreach ($user in $users) {
+        "$($user.Name) -> $($user.LastPasswordSet)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    }
+}
+
+function IsBitlockerEnable
+{
+    $users = Get-BitLockerVolume
+
+    "=== Bitlockers ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    foreach ($user in $users) {
+        "$($user.MountPoint) status: $($user.ProtectionStatus)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    }
+}
+
+<#
+.DESCRIPTION
 main function that lead all the script
 #>
 function main
@@ -168,6 +192,8 @@ function main
     IsFirewallOn
     IsAntivirusOn
     GetUserLastLogin
+    GetUserLastPwdSet
+    IsBitlockerEnable
 }
 
 main
