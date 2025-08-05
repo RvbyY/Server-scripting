@@ -107,7 +107,14 @@ function DisabledadminCpte
 
 function IsFirewallOn
 {
+    $profiles = Get-NetFirewallProfile
+    $output = "=== Firewall Status ==="
 
+    $output | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    foreach ($profile_u in $profiles) {
+        $outputString = "$($profile_u.name) -> $($profile_u.Enabled)"
+        $outputString | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    }
 }
 
 function IsAntivirusOn
@@ -127,6 +134,7 @@ function main
     Set-Content -Path .\info.txt -Value $null
     GetAdminUsers
     DisabledadminCpte
+    IsFirewallOn
 }
 
 main
