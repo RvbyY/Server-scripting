@@ -140,6 +140,20 @@ function IsAntivirusOn
 
 <#
 .DESCRIPTION
+display users last login
+#>
+function GetUserLastLogin
+{
+    $users = Get-LocalUser
+
+    "=== Last Login ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    foreach ($user in $users) {
+        "$($user.Name) -> $($user.LastLogon)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    }
+}
+
+<#
+.DESCRIPTION
 main function that lead all the script
 #>
 function main
@@ -153,6 +167,7 @@ function main
     DisabledadminCpte
     IsFirewallOn
     IsAntivirusOn
+    GetUserLastLogin
 }
 
 main
