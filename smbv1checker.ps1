@@ -74,13 +74,45 @@ list all admin users of the machine
 function GetAdminUsers
 {
     $groups = Get-LocalGroupMember -Group "Administrators"
-
     $output = "=== Administrators on this device ==="
+
     $output | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     foreach ($group in $groups) {
         $outputString = "-> $($group.Name) [$($group.ObjectClass)]"
         $outputString | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     }
+}
+
+<#
+.DESCRIPTION
+list all disabled admin accounts
+#>
+function DisabledadminCpte
+{
+    $admins = Get-LocalGroupMember -Group "Administrators"
+    $output = "=== Disabled administrators users ==="
+
+    $output | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    foreach ($admin in $admins) {
+        if ($admin.ObjectClass -eq "User") {
+            $username = ($admin.Name -split '\\')[-1]
+            $rights = Get-LocalUser -Name $username
+            if ($rights.Enabled -eq $false) {
+                $outputString = "-> $($username) [$($admin.ObjectClass)]"
+                $outputString | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+            }
+        }
+    }
+}
+
+function IsFirewallOn
+{
+
+}
+
+function IsAntivirusOn
+{
+
 }
 
 <#
@@ -94,6 +126,7 @@ function main
     TestUserCredentials
     Set-Content -Path .\info.txt -Value $null
     GetAdminUsers
+    DisabledadminCpte
 }
 
 main
