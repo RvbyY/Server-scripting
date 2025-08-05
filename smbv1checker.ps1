@@ -166,6 +166,10 @@ function GetUserLastPwdSet
     }
 }
 
+<#
+.DESCRIPTION
+display bitlocker w/ their status
+#>
 function IsBitlockerEnable
 {
     $users = Get-BitLockerVolume
@@ -173,6 +177,20 @@ function IsBitlockerEnable
     "=== Bitlockers ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     foreach ($user in $users) {
         "$($user.MountPoint) status: $($user.ProtectionStatus)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    }
+}
+
+<#
+.DESCRIPTION
+list powershell drives
+#>
+function ListPsDrive
+{
+    $drives = Get-PSDrive -PSProvider FileSystem
+
+    "=== Drives ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    foreach ($drive in $drives) {
+        "$($drive.Name): free space (GB): $([math]::round($drive.Free / 1GB, 2))" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     }
 }
 
@@ -194,6 +212,7 @@ function main
     GetUserLastLogin
     GetUserLastPwdSet
     IsBitlockerEnable
+    ListPsDrive
 }
 
 main
