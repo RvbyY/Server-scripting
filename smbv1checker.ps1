@@ -2,21 +2,22 @@
 .DESCRIPTION
 check if smbv1 is in the device to disable it
 #>
-function IsSmbv1
-{
+function IsSmbv1 {
     $os = (Get-CimInstance Win32_OperatingSystem).Caption
 
-    Write-Host "Detected OS: $os"
+    "=== System version ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    "Detected OS: $os" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     if ($os -like "*Windows*") {
+        "=== SmbV1 Check ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
         $feature = Get-WindowsOptionalFeature -Online -FeatureName SMB1Protocol
         if ($feature.State -eq 'Enabled') {
-            Write-Host "Disabling SMBv1..."
+            "Disabling SMBv1..." | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
             Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol -NoRestart
         } else {
-            Write-Host "SMBv1 already disabled."
+            "SMBv1 already disabled." | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
         }
     } else {
-        Write-Host "This script only works on Windows. Current OS is not supported." -ForegroundColor Red
+        "This script only works on Windows. Current OS is not supported." | Out-File -FilePath ".\info.txt" -Append -Encoding utf8 -Force
     }
 }
 
@@ -28,12 +29,13 @@ function rebootTime
 {
     $os = Get-CimInstance -ClassName Win32_OperatingSystem
     $csName = $os.CSName
-    $lastBoot = $os.$lastBootUpTime
+    $lastBoot = $os.LastBootUpTime
 
-    Write-Output "Computer Name     : $csName"
-    Write-Output "Last Boot Time    : $lastBoot"
+    "=== Last reboot time ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    "Computer Name     : $csName" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    "Last Boot Time    : $lastBoot" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     $uptime = (Get-Date) - $lastBoot
-    Write-Output "System Uptime     : $($uptime.Days) days, $($uptime.Hours) hours, $($uptime.Minutes) minutes"
+    "System Uptime     : $($uptime.Days) days, $($uptime.Hours) hours, $($uptime.Minutes) minutes" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
 }
 
 <#
@@ -142,10 +144,11 @@ main function that lead all the script
 #>
 function main
 {
+    Set-Content -Path .\info.txt -Value $null
     IsSmbv1
     IsUserAdmin
+    rebootTime
     TestUserCredentials
-    Set-Content -Path .\info.txt -Value $null
     GetAdminUsers
     DisabledadminCpte
     IsFirewallOn
