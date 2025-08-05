@@ -105,6 +105,10 @@ function DisabledadminCpte
     }
 }
 
+<#
+.DESCRIPTION
+check and display is firewall on
+#>
 function IsFirewallOn
 {
     $profiles = Get-NetFirewallProfile
@@ -117,9 +121,19 @@ function IsFirewallOn
     }
 }
 
+<#
+.DESCRIPTION
+display device antivirus
+#>
 function IsAntivirusOn
 {
+    $Antis = Get-CimInstance -Namespace "root\SecurityCenter2" -ClassName AntiVirusProduct
+    $output ="=== Antivirus ==="
 
+    $output | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    foreach ($Anti in $Antis) {
+        $Anti | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    }
 }
 
 <#
@@ -135,6 +149,7 @@ function main
     GetAdminUsers
     DisabledadminCpte
     IsFirewallOn
+    IsAntivirusOn
 }
 
 main
