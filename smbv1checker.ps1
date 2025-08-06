@@ -196,6 +196,37 @@ function ListPsDrive
 
 <#
 .DESCRIPTION
+#>
+function DisplayVSS
+{
+    $writers = vssadmin list writers
+
+    "=== VSS ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    foreach ($writer in $writers) {
+        ""
+    }
+}
+
+function GetProcessNbr
+{
+    $processors = Get-WinObject -Class Win32_Processor
+
+    "=== Process Number ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    "$($processors.Count)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+}
+
+function GetLogicalProcessor
+{
+    $processors = Get-WinObject -Class Win32_PerfFormattedData_PerfOS_System
+
+    "=== Logical Process Number ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    foreach ($process in $processors) {
+        "$($process.NumberOfLogicalProcessors)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    }
+}
+
+<#
+.DESCRIPTION
 main function that lead all the script
 #>
 function main
@@ -213,6 +244,7 @@ function main
     GetUserLastPwdSet
     IsBitlockerEnable
     ListPsDrive
+    GetProcessNbr
 }
 
 main
