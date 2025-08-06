@@ -196,6 +196,7 @@ function ListPsDrive
 
 <#
 .DESCRIPTION
+display vvs writers
 #>
 function DisplayVSS
 {
@@ -207,6 +208,10 @@ function DisplayVSS
     }
 }
 
+<#
+.DESCRIPTION
+Get processors numbers
+#>
 function GetProcessNbr
 {
     $processors = Get-WinObject -Class Win32_Processor
@@ -215,6 +220,9 @@ function GetProcessNbr
     "$($processors.Count)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
 }
 
+<#
+Get logical processor
+#>
 function GetLogicalProcessor
 {
     $processors = Get-WinObject -Class Win32_PerfFormattedData_PerfOS_System
