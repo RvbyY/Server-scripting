@@ -117,9 +117,11 @@ function IsFirewallOn
     $output = "=== Firewall Status ==="
 
     $output | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
-    foreach ($profile_u in $profiles) {
-        $outputString = "$($profile_u.name) -> $($profile_u.Enabled)"
-        $outputString | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    if ($profiles) {
+        foreach ($profile_u in $profiles) {
+            $outputString = "$($profile_u.name) -> $($profile_u.Enabled)"
+            $outputString | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+        }
     }
 }
 
@@ -129,12 +131,16 @@ display device antivirus
 #>
 function IsAntivirusOn
 {
-    $Antis = Get-CimInstance -Namespace "root\SecurityCenter2" -ClassName AntiVirusProduct
+    $Antis = Get-CimInstance -ClassName Win32_Product | Where-Object { $_.Name -like "*antivirus*" }
     $output ="=== Antivirus ==="
 
     $output | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
-    foreach ($Anti in $Antis) {
-        "$($Anti.displayName)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    if ($Antis) {
+        foreach ($Anti in $Antis) {
+            "$($Anti.DisplayName)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+        }
+    } else {
+        "No antivirus products found." | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     }
 }
 
@@ -147,8 +153,10 @@ function GetUserLastLogin
     $users = Get-LocalUser
 
     "=== Last Login ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
-    foreach ($user in $users) {
-        "$($user.Name) -> $($user.LastLogon)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    if ($users) {
+        foreach ($user in $users) {
+            "$($user.Name) -> $($user.LastLogon)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+        }
     }
 }
 
@@ -161,8 +169,10 @@ function GetUserLastPwdSet
     $users = Get-LocalUser
 
     "=== Last pwd set ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
-    foreach ($user in $users) {
-        "$($user.Name) -> $($user.LastPasswordSet)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    if ($users) {
+        foreach ($user in $users) {
+            "$($user.Name) -> $($user.LastPasswordSet)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+        }
     }
 }
 
@@ -175,8 +185,10 @@ function IsBitlockerEnable
     $users = Get-BitLockerVolume
 
     "=== Bitlockers ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
-    foreach ($user in $users) {
-        "$($user.MountPoint) status: $($user.ProtectionStatus)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    if ($users) {
+        foreach ($user in $users) {
+            "$($user.MountPoint) status: $($user.ProtectionStatus)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+        }
     }
 }
 
@@ -189,8 +201,10 @@ function ListPsDrive
     $drives = Get-PSDrive -PSProvider FileSystem
 
     "=== Drives ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
-    foreach ($drive in $drives) {
-        "$($drive.Name): free space (GB): $([math]::round($drive.Free / 1GB, 2))" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    if ($drives) {
+        foreach ($drive in $drives) {
+            "$($drive.Name): free space (GB): $([math]::round($drive.Free / 1GB, 2))" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+        }
     }
 }
 
