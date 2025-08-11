@@ -1,48 +1,57 @@
 /* ------------------------------------------------------------------------------------ *
- *                                                                                      *
  * EPITECH PROJECT - Sat, Aug, 2025                                                     *
  * Title           - integrit                                                           *
- * Description     -                                                                    *
- *     ServerDetectionApp                                                               *
- *                                                                                      *
- * ------------------------------------------------------------------------------------ *
- *                                                                                      *
- *       _|_|_|_|  _|_|_|    _|_|_|  _|_|_|_|_|  _|_|_|_|    _|_|_|  _|    _|           *
- *       _|        _|    _|    _|        _|      _|        _|        _|    _|           *
- *       _|_|_|    _|_|_|      _|        _|      _|_|_|    _|        _|_|_|_|           *
- *       _|        _|          _|        _|      _|        _|        _|    _|           *
- *       _|_|_|_|  _|        _|_|_|      _|      _|_|_|_|    _|_|_|  _|    _|           *
- *                                                                                      *
+ * Description     - ServerDetectionApp                                                 *
  * ------------------------------------------------------------------------------------ */
 
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
-
-public delegate void FunctionDelegate(string[] args, Env env);
 
 public class Function
 {
-    public type Type { get; set; }
-    public FunctionDelegate FunctionToCall { get; set; }
+    public string Type { get; set; }
     public string Filepath { get; set; }
+
+    public Function(string type, string filepath)
+    {
+        Type = type;
+        Filepath = filepath;
+    }
 }
 
-namespace ServerDetecionApp
+namespace ServerDetectionApp
 {
     public partial class MainForm : Form
     {
         public MainForm()
         {
             InitializeComponent();
-            comboBoxServerType.Items.AddRange(new string[]{"Active Directory",
-                "mssql", "RDS", "print", "hypervisor", "file"});
+            comboBoxServerType.Items.AddRange(new string[]
+            {
+                "Active Directory", "mssql", "RDS", "print", "hypervisor", "file"
+            });
         }
 
         private void ButtonDetect_Click(object sender, EventArgs e)
         {
             string selectedServer = comboBoxServerType.SelectedItem?.ToString();
-            string result = DetectServer(selectedServer);
-            labelResult.Text = result;
+            if (string.IsNullOrEmpty(selectedServer))
+            {
+                labelResult.Text = "Please select a server type.";
+                return;
+            }
+
+            string scriptPath = DetectServer(selectedServer);
+            if (!string.IsNullOrEmpty(scriptPath))
+            {
+                RunScript(scriptPath);
+                labelResult.Text = $"Detection script launched for: {selectedServer}";
+            }
+            else
+            {
+                labelResult.Text = "Server type not recognized.";
+            }
         }
 
         static void RunScript(string scriptPath)
@@ -52,7 +61,7 @@ namespace ServerDetecionApp
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "powershell",
-                    Arguments = $"-ExecutionPolicy Bypass -File {scriptPath}",
+                    Arguments = $"-ExecutionPolicy Bypass -File \"{scriptPath}\"",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
@@ -63,92 +72,25 @@ namespace ServerDetecionApp
             p.WaitForExit();
         }
 
-        private string DetectedServer(string serverType)
+        private string DetectServer(string serverType)
         {
-            string scriptpath = string.Empty;
-           switch (serverType)
-           {
-               case "Active Directory":
-                   /*scriptpath*/
-                   break;
-               case "mssql":
-                   /*scriptpath*/
-                   break;
-               case "RDS":
-                   /*scriptpath*/
-                   break;
-               case "print":
-                   /*scriptpath*/
-                   break;
-               case "hypervisor":
-                   /*scriptpath*/
-                   break;
-               case "file":
-               /*scriptpath*/
-               default:
-                   scriptpath = "C:\\Users\\Public\\Server-scripting\\smbv1checker.ps1";
-                   break;
-           }
+            var functions = new Function[]
+            {
+                new Function("Active Directory", "scripts/ActiveDirectory.ps1"),
+                new Function("mssql", "scripts/MsSql.ps1"),
+                new Function("RDS", "scripts/RDS.ps1"),
+                new Function("print", "scripts/Print.ps1"),
+                new Function("hypervisor", "scripts/Hypervisor.ps1"),
+                new Function("file", "scripts/File.ps1"),
+                new Function(null, null)
+            };
+
+            for (int i = 0; functions[i].Type != null; i++)
+            {
+                if (serverType.Equals(functions[i].Type, StringComparison.OrdinalIgnoreCase))
+                    return functions[i].Filepath;
+            }
+            return null;
         }
     }
 }
-
-// // Define the delegate type
-// public delegate void FunctionDelegate(string[] args, Env env);
-
-// // Enum for function types (optional)
-// public enum FunctionType
-// {
-//     Semicolon,
-//     Pipe,
-//     RedirectR,
-//     DoubleRedirectR,
-//     RedirectL,
-//     DoubleRedirectL,
-//     Error
-// }
-
-// // Class to store function information
-// public class Function
-// {
-//     public FunctionType Type { get; set; }
-//     public FunctionDelegate FunctionToCall { get; set; }
-//     public string Filepath { get; set; }
-
-//     // Constructor
-//     public Function(FunctionType type, FunctionDelegate functionToCall, string filepath)
-//     {
-//         Type = type;
-//         FunctionToCall = functionToCall;
-//         Filepath = filepath;
-//     }
-// }
-
-// // Example usage
-// public class Example
-// {
-//     public static void MySemicolon(string[] args, Env env)
-//     {
-//         // Your logic here
-//     }
-
-//     public static void Main()
-//     {
-//         // Array of functions similar to your C array
-//         var functions = new Function[]
-//         {
-//             new Function(FunctionType.Semicolon, MySemicolon, "path/to/semicolon/file"),
-//             new Function(FunctionType.Pipe, MyPipe, "path/to/pipe/file")
-//             // Add more functions as necessary
-//         };
-
-//         // Example of calling a function
-//         var semicolonFunc = functions[0];  // Access the semicolon function
-//         semicolonFunc.FunctionToCall(new string[] { "arg1", "arg2" }, new Env()); // Call it
-//     }
-
-//     public static void MyPipe(string[] args, Env env)
-//     {
-//         // Another function implementation
-//     }
-// }
