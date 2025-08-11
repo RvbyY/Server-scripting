@@ -1,1 +1,1 @@
-. .\smbv1checker.ps1
+.\smbv1checker.ps1
