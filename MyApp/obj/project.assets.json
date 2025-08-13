@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/bassirou/integrit/Server-scripting/MyApp/MyApp.csproj",
+      "projectUniqueName": "/home/bassirou/integrit/delivery/Server-scripting/MyApp/MyApp.csproj",
       "projectName": "MyApp",
-      "projectPath": "/home/bassirou/integrit/Server-scripting/MyApp/MyApp.csproj",
+      "projectPath": "/home/bassirou/integrit/delivery/Server-scripting/MyApp/MyApp.csproj",
       "packagesPath": "/home/bassirou/.nuget/packages/",
-      "outputPath": "/home/bassirou/integrit/Server-scripting/MyApp/obj/",
+      "outputPath": "/home/bassirou/integrit/delivery/Server-scripting/MyApp/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/bassirou/.nuget/NuGet/NuGet.Config"

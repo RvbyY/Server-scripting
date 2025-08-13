@@ -16,15 +16,20 @@ function TestUserCredentials
         $obj = New-Object System.DirectoryServices.AccountManagement.PrincipalContext('machine', $computer)
         if ($obj.ValidateCredentials($username, $decodedpswd) -eq $True) {
             Write-Host "The password of UserName $($username) in Computer $($computer) it is correct" -BackgroundColor Green
-        } else {
+        }
+        else {
             Write-Host "The password of UserName $($username) in Computer $($computer) does not is correct" -BackgroundColor Red
         }
     }
 }
 
+<#
+.DESCRIPTION
+Check Spooler
+#>
 function CheckSpooler
 {
-    $PrintNames = Get-ADComputer -Filter {ServicePrincipalName -like "PRINT/*"}
+    $PrintNames = Get-ADComputer -Filter { ServicePrincipalName -like "PRINT/*" }
 
     "=== Disabled Spoolers ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     foreach ($PrintName in $PrintNames) {
@@ -35,6 +40,10 @@ function CheckSpooler
     }
 }
 
+<#
+.DESCRIPTION
+Check LSA
+#>
 function CheckLSA
 {
     $infos = Get-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Lsa"
@@ -43,6 +52,59 @@ function CheckLSA
     "$($infos.EnabledLsa)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
 }
 
-function CheckNTLM
+<#
+.DESCRIPTION
+Check if Kerberos is disbled
+#>
+function CheckKerberos
 {
+    $users = Get-LocalUser
+
+    "=== Kerberos ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    if ($users) {
+        foreach ($user in $users) {
+            $kerberos = Get-ADUser -Identity $user -Properties AuthenticationPolicies
+            "$($user): $($kerberos)" | Out-File -FilePath -Append utf8
+        }
+    }
+}
+
+<#
+.DESCRIPTION
+List installed service
+#>
+function listInstalledService
+{
+    $Services = Get-Service
+
+    "=== Installed Service ===" | out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    "$($Services)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+}
+
+<#
+.DESCRIPTION
+Check if LAPS is enabled
+#>
+function CheckLAPS
+{
+    $computer = Get-ComputerInfo
+
+    "=== LAPS ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    $laps = Get-ADComputer -Identity $computer.CSName -Properties ms-MCS-AdmPwd, ms-MCS-AdmPwdExpirationTime
+    "$($laps)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+}
+
+<#
+.DESCRIPTION
+Test if LAPS Password exist
+#>
+function GetLAPS
+{
+    "=== LAPS Password ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    if (Get-ADComputer -Identity "lapsAD2" -ErrorAction silentlyContinue) {
+        $lapsPwd = Get-ADComputer -Identity "lapsAD2" -AsPlainText
+        "The Password is enable: $($lapsPwd)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    } else {
+        "LAPS password disable"
+    }
 }
