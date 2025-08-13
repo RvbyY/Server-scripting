@@ -108,3 +108,16 @@ function GetLAPS
         "LAPS password disable"
     }
 }
+
+function main
+{
+    TestUserCredentials
+    CheckSpooler
+    CheckLSA
+    CheckKerberos
+    listInstalledService
+    CheckLAPS
+    GetLAPS
+}
+
+main
