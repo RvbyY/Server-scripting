@@ -109,7 +109,35 @@ function GetLAPS
     }
 }
 
-function main
+<#
+.DESCRIPTION
+Hide the username of the session
+#>
+function HideUsername
+{
+    $currentUser = Get-LocalUser | Where-Object {$_.Name -eq $env:USERNAME}
+
+    if ($currentUser) {
+        Set-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name $currentUser.Name -Value 1
+    }
+}
+
+<#
+.DESCRIPTION
+Display SMB authentication time out/rate limiter#>
+function SMBAuthTimeOut
+{
+    $rateLimiter = Get-smbServerConfiguration | Format-List -Property invalidAuthenticationDelayTimeInMs
+
+    "=== SMB authentication rate limiter ===" | Out-file -Filepath ".\info.txt" -Append -Encoding utf8
+    "$($rateLimiter)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+}
+
+<#
+.DESCRIPTION
+Main function of active directory script
+#>
+function ADMain
 {
     TestUserCredentials
     CheckSpooler
@@ -120,4 +148,4 @@ function main
     GetLAPS
 }
 
-main
+ADMain
