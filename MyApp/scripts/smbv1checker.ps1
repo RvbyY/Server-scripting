@@ -2,7 +2,8 @@
 .DESCRIPTION
 check if smbv1 is in the device to disable it
 #>
-function IsSmbv1 {
+function IsSmbv1
+{
     $os = (Get-CimInstance Win32_OperatingSystem).Caption
 
     "=== System version ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
