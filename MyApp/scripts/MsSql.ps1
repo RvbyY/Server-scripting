@@ -134,6 +134,20 @@ function checkWebDAV
 
 <#
 .DESCRIPTION
+Check Password Complexity of each admin user
+#>
+function CheckPwdComplexity
+{
+    $admins = Get-LocalUser | Where-Object { $_.Name -eq "Administrator"}
+
+    "=== Admins Paswword Complexity ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    foreach ($admin in $admins) {
+        "$($admin.Name): $($admin.PasswordComplexity)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    }
+}
+
+<#
+.DESCRIPTION
 MSSql windows server main function#>
 function SQLmain
 {
@@ -148,6 +162,7 @@ function SQLmain
     LocalUserSql
     IsSpoolerEnable
     ListServerService
+    CheckPwdComplexity
 }
 
 SQLmain
