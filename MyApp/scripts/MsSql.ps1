@@ -103,6 +103,37 @@ function IsSpoolerEnable
 
 <#
 .DESCRIPTION
+Local User SQL
+#>
+function LocalUserSql
+{
+    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status
+    $query = "SELECT name, type_desc FROM sys.database_principals WHERE type IN ('S', 'U') AND sid 0x0"
+    $localUsers = Invoke-Sqlcmd -ServerInstance $serverInstance -Database 'master' -Query $query
+
+    "=== Local Users SQL ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    "$($localusers)" | Out-File -FilePath ".\info.txt" -Append -Enconding utf8
+}
+
+<#
+.DESCRIPTION
+Check if WebDAV is disabled
+#>
+function checkWebDAV
+{
+    $data = Get-WindowsFeature -Name WebDAV* | Select-Object DisplayName, InstallState
+
+    "=== WebDAV ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    if ($data.InstallState -eq "installed") {
+        <# statement to remove the things #>
+        checkWebDAV
+    } else {
+        "Disabled" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    }
+}
+
+<#
+.DESCRIPTION
 MSSql windows server main function#>
 function SQLmain
 {
