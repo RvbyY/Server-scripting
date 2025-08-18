@@ -1,15 +1,117 @@
 .\smbv1checker.ps1
 
+<#
+.DESCRIPTION
+Display SQl services
+#>
 function ListSQLServices
 {
     $Services = Get-Service | Where-Object DisplayName -Like "SQL*"
-    "=== SQL Server Services ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
 
+    "=== SQL Server Services ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     "$($Services)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
 }
 
+<#
+.DESCRIPTION
+List Admin Users
+#>
+function ListAdminUsers
+{
+    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status
+    $query = "SELECT name FROM sys.server_principals WHERE is_fixed_role = 1 AND name = 'sysadmin'"
+    $adminUsers = Invoke-Sqlcmd -ServerInstance $serverInstance -Query $query
+
+    "=== Admin Users ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    "$($adminUsers)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+}
+
+<#
+.DESCRIPTION
+Display and list disabled admin Users#>
+function DisabledUsers
+{
+    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status
+    $query = "SELECT name, is_disabled FROM sys.server_principals WHERE is_fixed_role = 1 AND name = 'sysadmin' AND is_disabled = 1"
+    $disabledUsers = Invoke-Sqlcmd -ServerInstance $serverInstance -Query $query
+
+    "=== Disabled Admin Users ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    "$($disabledUsers)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+}
+
+<#
+.DESCRIPTION
+See last Users login
+#>
+function LastUsersLog
+{
+    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status
+    $query = "SELECT p.name, p.type_desc, s.last_login
+        FROM sys.server_principals p
+        LEFT JOIN sys.syslogins s ON p.sid = s.sid
+        WHERE p.is_fixed_role = 1 AND p.name = 'sysadmin'"
+    $adminUserLog = Invoke-Sqlcmd -ServerInstance $serverInstance -Query $query
+
+    "=== Admin Last Login ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    "$($adminUserLog)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+}
+
+<#
+.DESCRIPTION
+Display last password change
+#>
+function LastPwdChange
+{
+    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status
+    $query = "SELECT p.name, p.type_desc, s.password_changed
+        FROM sys.server_principals p
+        LEFT JOIN sys.sql_logins s ON p.sid = s.sid
+        WHERE p.is_fixed_role = 1 AND p.name = 'sysadmin'"
+    $adminLastPwd = Invoke-Sqlcmd -ServerInstance $serverInstance -Query $query
+
+    "=== Admin Last Password change ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    "$($adminLastPwd)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+}
+
+<#
+.DESCRIPTION
+List Server Service
+#>
+function ListServerService
+{
+    $services = Get-Service | Where-Object { $_.DisplayName -like 'SQL Server*' } | Select-Object DisplayName, Status, Name
+
+    "=== SQL Installed Service ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    "$($services)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+}
+
+<#
+.DESCRIPTION
+List Disabled Spooler
+#>
+function IsSpoolerEnable
+{
+    $spoolers = Get-Service -Name Spooler | Select-Object DisplayName, Status
+
+    "=== Disabled Spoolers ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    foreach ($spooler in $spoolers) {
+        if ($spooler.StartType -eq 'Disabled') {
+            "$($spooler.Name): $($spooler.Status)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+        }
+    }
+}
+
+<#
+.DESCRIPTION
+MSSql windows server main function#>
 function SQLmain
 {
+    ListSQLServices
+    IsSpoolerEnable
+    LastPwdChange
+    LastUsersLog
+    DisabledUsers
+    ListAdminUsers
     ListSQLServices
 }
 
