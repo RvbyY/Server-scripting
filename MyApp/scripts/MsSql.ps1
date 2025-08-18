@@ -125,7 +125,7 @@ function checkWebDAV
 
     "=== WebDAV ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     if ($data.InstallState -eq "installed") {
-        <# statement to remove the things #>
+        Remove-WindowsFeature -Name WebDAV-Redirector, WebDAV-Publishing
         checkWebDAV
     } else {
         "Disabled" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
