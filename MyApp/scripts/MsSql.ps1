@@ -144,6 +144,10 @@ function SQLmain
     DisabledUsers
     ListAdminUsers
     ListSQLServices
+    checkWebDAV
+    LocalUserSql
+    IsSpoolerEnable
+    ListServerService
 }
 
 SQLmain
