@@ -30,7 +30,8 @@ function ServiceServer
     }
 }
 
-function CheckPrintersStatus {
+function CheckPrintersStatus
+{
     $ports = Get-Printer | Select-Object Name, PortName
     $value = "false"
 
@@ -47,3 +48,13 @@ function CheckPrintersStatus {
         "LPR and LPD aren't used" | Out-File -FilePath "info.txt" -Append -Encoding utf8
     }
 }
+
+function FileMain
+{
+    listAdminUsers
+    listDisabledUsers
+    ServiceServer
+    CheckPrintersStatus
+}
+
+FileMain
