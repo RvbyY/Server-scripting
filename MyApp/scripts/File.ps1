@@ -49,12 +49,21 @@ function CheckPrintersStatus
     }
 }
 
+function SMBAuthRateLimiter
+{
+    $rateLimiter = Get-smbServerConfiguration | Format-List -Property invalidAuthenticationDelayTimeInMs
+
+    "=== SMB authentication rate limiter ===" | Out-file -Filepath ".\info.txt" -Append -Encoding utf8
+    "$($rateLimiter)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+}
+
 function FileMain
 {
     listAdminUsers
     listDisabledUsers
     ServiceServer
     CheckPrintersStatus
+    SMBAuthRateLimiter
 }
 
 FileMain
