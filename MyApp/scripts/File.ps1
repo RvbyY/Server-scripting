@@ -1,5 +1,9 @@
 .\smbv1checker.ps1
 
+<#
+.DESCRIPTION
+List domain admin users
+#>
 function listAdminUsers
 {
     $admins = Get-ADGroupMember -Identity "Administrators" | Select-Object Name, SamAccountName
@@ -10,6 +14,10 @@ function listAdminUsers
     }
 }
 
+<#
+.DESCRIPTION
+List disabled admin users
+#>
 function listDisabledUsers
 {
     $admins = Get-ADGroupMember -Identity "Administrators" | Where-Object { $_.Enabled -eq $false } | Select-Object Name, SamAccountName
@@ -20,6 +28,10 @@ function listDisabledUsers
     }
 }
 
+<#
+.DESCRIPTION
+List server installed service
+#>
 function ServiceServer
 {
     $services = Get-Service | Where-Object { $_.DisplayName -like '*Server*' -or $_.DisplayName -like '*File*' }
@@ -30,6 +42,10 @@ function ServiceServer
     }
 }
 
+<#
+.DESCRIPTION
+Check if line printers are enable and their status
+#>
 function CheckPrintersStatus
 {
     $ports = Get-Printer | Select-Object Name, PortName
@@ -49,6 +65,10 @@ function CheckPrintersStatus
     }
 }
 
+<#
+.DESCRIPTION
+Check SMB authentication rate limiter
+#>
 function SMBAuthRateLimiter
 {
     $rateLimiter = Get-smbServerConfiguration | Format-List -Property invalidAuthenticationDelayTimeInMs
@@ -57,6 +77,9 @@ function SMBAuthRateLimiter
     "$($rateLimiter)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
 }
 
+<#
+File server script main function
+#>
 function FileMain
 {
     listAdminUsers

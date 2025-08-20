@@ -1,8 +1,12 @@
 .\smbv1checker.ps1
 
+<#
+.DESCRIPTION
+List domain admin user
+#>
 function ListUsers
 {
-    $admins = Get-localGroupMember -Group "Administrators" | Select-Object Name
+    $admins = Get-ADGroupMember -Identity "Administrators" | Select-Object Name
 
     "=== Admins Users ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     foreach ($admin in $admins) {
@@ -10,14 +14,22 @@ function ListUsers
     }
 }
 
+<#
+.DESCRIPTION
+List disabled admin user
+#>
 function DisabledAdminUser
 {
-    $admins = Get-LocalUser | Where-Object { $_.Enabled -eq $false -and $_.Name -like "*admin*" }
+    $admins = Get-ADGroupMember -Identity "Administrators" | Where-Object { $_.Enabled -eq $false -and $_.Name -like "*admin*" }
 
     "=== Disabled Admin Users ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     "$($admins)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
 }
 
+<#
+.DESCRIPTION
+List server installed service
+#>
 function InstalledServicesList
 {
     $services = Get-Service | Sort-Object DisplayName
@@ -26,6 +38,9 @@ function InstalledServicesList
     "$($services)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
 }
 
+<#
+Check if line printers are enable and their status
+#>
 function CheckLinePrintersStatus
 {
     $ports = Get-Printer | Select-Object Name, PortName
@@ -45,6 +60,10 @@ function CheckLinePrintersStatus
     }
 }
 
+<#
+.DESCRIPTION
+Print server script main function
+#>
 function PrintMain
 {
     ListUsers
