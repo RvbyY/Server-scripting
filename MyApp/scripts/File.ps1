@@ -6,11 +6,11 @@ List domain admin users
 #>
 function listAdminUsers
 {
-    $admins = Get-ADGroupMember -Identity "Administrators" | Select-Object Name, SamAccountName
+    $admins = Get-LocalGroupMember -Group "Administrators" | Select-Object Name
 
     "=== Admin Users (Domain) ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     foreach ($admin in $admins) {
-        "$($admin.Name)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+        "$($admin)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     }
 }
 
@@ -20,11 +20,11 @@ List disabled admin users
 #>
 function listDisabledUsers
 {
-    $admins = Get-ADGroupMember -Identity "Administrators" | Where-Object { $_.Enabled -eq $false } | Select-Object Name, SamAccountName
+    $admins = Get-LocalGroupMember -Group "Administrators" | Where-Object { $_.Enabled -eq $false } | Select-Object Name
 
     "=== Disabled Users ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     foreach ($admin in $admins) {
-        "$($admin.Name)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+        "$($admin)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     }
 }
 
@@ -34,11 +34,11 @@ List server installed service
 #>
 function ServiceServer
 {
-    $services = Get-Service | Where-Object { $_.DisplayName -like '*Server*' -or $_.DisplayName -like '*File*' }
+    $services = Get-Service | Where-Object { $_.DisplayName -like '*Server*' -or $_.DisplayName -like '*File*' } | Select-Object Name
 
     "=== Server Services ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     foreach ($service in $services) {
-        "$($service.Name)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+        "$($service)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     }
 }
 
@@ -48,7 +48,7 @@ Check if line printers are enable and their status
 #>
 function CheckPrintersStatus
 {
-    $ports = Get-Printer | Select-Object Name, PortName
+    $ports = Get-Printer | Select-Object PortName
     $value = "false"
 
     foreach ($port in $ports) {
