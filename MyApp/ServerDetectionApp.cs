@@ -11,10 +11,9 @@ using System.IO;
 
 public class Function
 {
-    public string Type { get; set; }
-    public string Filepath { get; set; }
-
-    public Function(string type, string filepath)
+    public string? Type { get; set; }
+    public string? Filepath { get; set; }
+    public Function(string? type, string? filepath)
     {
         Type = type;
         Filepath = filepath;
@@ -43,7 +42,7 @@ namespace ServerDetectionApp
                 return;
             }
 
-            string scriptPath = DetectServer(selectedServer);
+            string? scriptPath = DetectServer(selectedServer);
             if (!string.IsNullOrEmpty(scriptPath))
             {
                 RunScript(scriptPath);
@@ -73,7 +72,7 @@ namespace ServerDetectionApp
             p.WaitForExit();
         }
 
-        private string DetectServer(string serverType)
+        private string? DetectServer(string serverType)
         {
             var functions = new Function[]
             {
@@ -83,10 +82,9 @@ namespace ServerDetectionApp
                 new Function("print", Path.Combine("scripts", "Print.ps1")),
                 new Function("hypervisor", Path.Combine("scripts", "Hypervisor.ps1")),
                 new Function("file", Path.Combine("scripts", "File.ps1")),
-                new Function(null, null)
             };
 
-            for (int i = 0; functions[i].Type != null; i++)
+            for (int i = 0; i < functions.Length; i++)
             {
                 if (serverType.Equals(functions[i].Type, StringComparison.OrdinalIgnoreCase))
                     return functions[i].Filepath;
