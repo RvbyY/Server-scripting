@@ -1,5 +1,9 @@
 .\smbv1checker.ps1
 
+<#
+.DESCRIPTION
+List admin users of the domain
+#>
 function AdminList
 {
     $admins = Get-LocalGroupMember -Group "Administrators" | Select-Object Name
@@ -10,6 +14,10 @@ function AdminList
     }
 }
 
+<#
+.DESCRIPTION
+List admin disabled
+#>
 function AdminDisabled
 {
     $admins = Get-LocalGroupMember -Group "Administrators" | Where-Object { $_.Enabled -eq $false } | Select-Object Name
@@ -20,6 +28,10 @@ function AdminDisabled
     }
 }
 
+<#
+.DESCRIPTION
+List server services
+#>
 function ServicesList
 {
     $services = Get-Service | Where-Object { $_.DisplayName -like '*Server*' -or $_.DisplayName -like '*File*' } | Select-Object Name
@@ -30,6 +42,10 @@ function ServicesList
     }
 }
 
+<#
+.DESCRIPTION
+List liner printers status and check if there're enable
+#>
 function PrintersStatus
 {
     $ports = Get-Printer | Select-Object PortName
@@ -49,6 +65,10 @@ function PrintersStatus
     }
 }
 
+<#
+.DESCRIPTION
+RDS script main function
+#>
 function RDSMain
 {
     AdminList
