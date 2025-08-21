@@ -13,8 +13,7 @@ public class Function
 {
     public string? Type { get; set; }
     public string? Filepath { get; set; }
-    public Function(string? type, string? filepath)
-    {
+    public Function(string? type, string? filepath) {
         Type = type;
         Filepath = filepath;
     }
@@ -22,44 +21,59 @@ public class Function
 
 namespace ServerDetectionApp
 {
-    public partial class MainForm : Form
-    {
-        public MainForm()
-        {
+    public class MainForm : Form {
+        private ComboBox comboBoxServerType;
+        private Label labelResult;
+        private Button buttonDetect;
+
+        public MainForm() {
             InitializeComponent();
-            comboBoxServerType.Items.AddRange(new string[]
-            {
+            comboBoxServerType.Items.AddRange(new string[] {
                 "Active Directory", "mssql", "RDS", "print", "hypervisor", "file"
             });
+        }
+
+        private void InitializeComponent()
+        {
+            this.comboBoxServerType = new ComboBox();
+            this.labelResult = new Label();
+            this.buttonDetect = new Button();
+            this.comboBoxServerType.Location = new System.Drawing.Point(20, 20);
+            this.comboBoxServerType.Size = new System.Drawing.Size(200, 25);
+            this.labelResult.Location = new System.Drawing.Point(20, 60);
+            this.labelResult.Size = new System.Drawing.Size(300, 25);
+            this.labelResult.Text = "";
+            this.buttonDetect.Location = new System.Drawing.Point(20, 100);
+            this.buttonDetect.Size = new System.Drawing.Size(100, 30);
+            this.buttonDetect.Text = "Detect";
+            this.buttonDetect.Click += ButtonDetect_Click;
+            this.Text = "Server Detection App";
+            this.ClientSize = new System.Drawing.Size(400, 200);
+            this.Controls.Add(this.comboBoxServerType);
+            this.Controls.Add(this.labelResult);
+            this.Controls.Add(this.buttonDetect);
         }
 
         private void ButtonDetect_Click(object sender, EventArgs e)
         {
             string selectedServer = comboBoxServerType.SelectedItem?.ToString();
-            if (string.IsNullOrEmpty(selectedServer))
-            {
+            string? scriptPath = DetectServer(selectedServer);
+
+            if (string.IsNullOrEmpty(selectedServer)) {
                 labelResult.Text = "Please select a server type.";
                 return;
             }
-
-            string? scriptPath = DetectServer(selectedServer);
-            if (!string.IsNullOrEmpty(scriptPath))
-            {
+            if (!string.IsNullOrEmpty(scriptPath)) {
                 RunScript(scriptPath);
                 labelResult.Text = $"Detection script launched for: {selectedServer}";
-            }
-            else
-            {
+            } else
                 labelResult.Text = "Server type not recognized.";
-            }
         }
 
-        static void RunScript(string scriptPath)
+        private static void RunScript(string scriptPath)
         {
-            var p = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
+            var p = new Process {
+                StartInfo = new ProcessStartInfo {
                     FileName = "powershell",
                     Arguments = $"-ExecutionPolicy Bypass -File \"{scriptPath}\"",
                     RedirectStandardOutput = true,
@@ -67,6 +81,7 @@ namespace ServerDetectionApp
                     CreateNoWindow = true
                 }
             };
+
             p.Start();
             Console.WriteLine(p.StandardOutput.ReadToEnd());
             p.WaitForExit();
@@ -74,8 +89,7 @@ namespace ServerDetectionApp
 
         private string? DetectServer(string serverType)
         {
-            var functions = new Function[]
-            {
+            var functions = new Function[] {
                 new Function("Active Directory", Path.Combine("scripts", "ActiveDirectory.ps1")),
                 new Function("mssql", Path.Combine("scripts", "MsSql.ps1")),
                 new Function("RDS", Path.Combine("scripts", "RDS.ps1")),
@@ -84,12 +98,19 @@ namespace ServerDetectionApp
                 new Function("file", Path.Combine("scripts", "File.ps1")),
             };
 
-            for (int i = 0; i < functions.Length; i++)
-            {
-                if (serverType.Equals(functions[i].Type, StringComparison.OrdinalIgnoreCase))
-                    return functions[i].Filepath;
+            foreach (var func in functions) {
+                if (serverType.Equals(func.Type, StringComparison.OrdinalIgnoreCase))
+                    return func.Filepath;
             }
             return null;
+        }
+
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
         }
     }
 }
