@@ -57,25 +57,31 @@ namespace ServerDetectionApp
         private void ButtonDetect_Click(object sender, EventArgs e)
         {
             string selectedServer = comboBoxServerType.SelectedItem?.ToString();
-            string? scriptPath = DetectServer(selectedServer);
+            string? scriptPath;
+            string result;
 
-            if (string.IsNullOrEmpty(selectedServer)) {
+            if (string.IsNullOrEmpty(selectedServer))
+            {
                 labelResult.Text = "Please select a server type.";
                 return;
             }
-            if (!string.IsNullOrEmpty(scriptPath)) {
-                RunScript(scriptPath);
+            scriptPath = DetectServer(selectedServer);
+            if (!string.IsNullOrEmpty(scriptPath))
+            {
+                result = RunScript(scriptPath);
                 labelResult.Text = $"Detection script launched for: {selectedServer}";
-            } else
+            }
+            else
                 labelResult.Text = "Server type not recognized.";
         }
 
-        private static void RunScript(string scriptPath)
+        private static string RunScript(string scriptPath)
         {
             var p = new Process {
                 StartInfo = new ProcessStartInfo {
                     FileName = "powershell",
                     Arguments = $"-ExecutionPolicy Bypass -File \"{scriptPath}\"",
+                    RedirectStandardError = true,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
@@ -83,9 +89,12 @@ namespace ServerDetectionApp
             };
 
             p.Start();
-            Console.WriteLine(p.StandardOutput.ReadToEnd());
+            string output = p.StandardOutput.ReadToEnd();
+            string error = p.StandardError.ReadToEnd();
             p.WaitForExit();
+            return string.IsNullOrEmpty(error) ? output : $"Error: {error}";
         }
+
 
         private string? DetectServer(string serverType)
         {
@@ -99,8 +108,11 @@ namespace ServerDetectionApp
             };
 
             foreach (var func in functions) {
+                Console.WriteLine("server: {0}", func.Type);
                 if (serverType.Equals(func.Type, StringComparison.OrdinalIgnoreCase))
+                {
                     return func.Filepath;
+                }
             }
             return null;
         }
