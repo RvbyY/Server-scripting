@@ -6,16 +6,11 @@ List domain admin users
 #>
 function listAdminUsers
 {
-    $admins = Get-ADGroupMember "Domain Admins" -Recursive | ForEach-Object {
-        if ($_.objectClass -eq 'user') {
-            $user = Get-ADUser $_.SamAccountName -Properties Enabled
-            if (-not $user.Enabled) { $user }
-        }
-    }
+    $admins = Get-ADGroupMember "Domain Admins" -Recursive | Where-Object { $_.ObjectClass -eq 'user' }
 
     "=== Admin Users (Domain) ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     foreach ($admin in $admins) {
-        "$($admin)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+        $admin.SamAccountName | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     }
 }
 
@@ -25,16 +20,13 @@ List disabled admin users
 #>
 function listDisabledUsers
 {
-    $admins = Get-ADGroupMember "Domain Admins" -Recursive | ForEach-Object {
-        if ($_.objectClass -eq 'user') {
-            $user = Get-ADUser $_.SamAccountName -Properties Enabled
-            if (-not $user.Enabled) { $user }
-        }
-    }
+    $admins = Get-ADGroupMember "Domain Admins" -Recursive | Where-Object { $_.ObjectClass -eq 'user' } |
+              ForEach-Object { Get-ADUser $_.SamAccountName -Properties Enabled } |
+              Where-Object { -not $_.Enabled }
 
     "=== Disabled Users ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     foreach ($admin in $admins) {
-        "$($admin)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+        $admin.SamAccountName | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     }
 }
 
@@ -44,7 +36,7 @@ List server installed service
 #>
 function ServiceServer
 {
-    $services = Get-Service | Where-Object { $_.DisplayName -like '*Server*' -or $_.DisplayName -like '*File*' } | Select-Object Name
+    $services = Get-Service | Where-Object { $_.DisplayName -like '*Server*' -or $_.DisplayName -like '*File*' } | Select-Object -ExpandProperty Name
 
     "=== Server Services ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     foreach ($service in $services) {
@@ -81,10 +73,10 @@ Check SMB authentication rate limiter
 #>
 function SMBAuthRateLimiter
 {
-    $rateLimiter = Get-smbServerConfiguration | Format-List -Property invalidAuthenticationDelayTimeInMs
+    $rateLimiter = Get-SmbServerConfiguration | Select-Object -ExpandProperty InvalidAuthenticationDelayTimeInMs
 
     "=== SMB authentication rate limiter ===" | Out-file -Filepath ".\info.txt" -Append -Encoding utf8
-    "$($rateLimiter)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    "InvalidAuthenticationDelayTimeInMs: $($rateLimiter)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
 }
 
 <#
