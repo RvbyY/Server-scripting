@@ -1,4 +1,4 @@
-.\Hypervisor.ps1
+& ".\Hypervisor.ps1"
 
 <#
 .DESCRIPTION
