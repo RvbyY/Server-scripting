@@ -1,5 +1,3 @@
-.\Hypervisor.ps1
-
 <#
 .DESCRIPTION
 List domain admin users
@@ -21,8 +19,8 @@ List disabled admin users
 function listDisabledUsers
 {
     $admins = Get-ADGroupMember "Domain Admins" -Recursive | Where-Object { $_.ObjectClass -eq 'user' } |
-              ForEach-Object { Get-ADUser $_.SamAccountName -Properties Enabled } |
-              Where-Object { -not $_.Enabled }
+        ForEach-Object { Get-ADUser $_.SamAccountName -Properties Enabled } |
+        Where-Object { -not $_.Enabled }
 
     "=== Disabled Users ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     foreach ($admin in $admins) {
@@ -84,6 +82,7 @@ File server script main function
 #>
 function FileMain
 {
+    .\Hypervisor.ps1
     listAdminUsers
     listDisabledUsers
     ServiceServer

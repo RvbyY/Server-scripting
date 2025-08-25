@@ -232,7 +232,6 @@ main function that lead all the script
 #>
 function main
 {
-    Set-Content -Path .\info.txt -Value $null
     IsSmbv1
     IsUserAdmin
     rebootTime
