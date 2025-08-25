@@ -53,15 +53,15 @@ function CheckPrintersStatus
 
     foreach ($port in $ports) {
         if ($port.PortName -like '*LPR*') {
-            "LPR is active" | Out-File -FilePath "info.txt" -Append -Encoding utf8
+            "LPR is active" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
             $value = "true"
         } elseif ($port.PortName -like '*LPD*') {
-            "LPD is active" | Out-File -FilePath "info.txt" -Append -Encoding utf8
+            "LPD is active" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
             $value = "true"
         }
     }
     if ($value -eq "false") {
-        "LPR and LPD aren't used" | Out-File -FilePath "info.txt" -Append -Encoding utf8
+        "LPR and LPD aren't used" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     }
 }
 
