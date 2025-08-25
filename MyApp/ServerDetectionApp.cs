@@ -68,6 +68,7 @@ namespace ServerDetectionApp
             scriptPath = DetectServer(selectedServer);
             if (!string.IsNullOrEmpty(scriptPath))
             {
+                //if (scriptPath.Equals(scriptPath.Combine("script", "sHypervisor.ps1")))
                 result = RunScript(scriptPath);
                 labelResult.Text = $"Detection script launched for: {selectedServer}";
             }

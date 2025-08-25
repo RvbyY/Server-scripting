@@ -1,3 +1,4 @@
+"=== Entered Hypervisor.ps1 === $(Get-Date)" | Out-File ".\debug.log" -Append
 <#
 .DESCRIPTION
 check if smbv1 is in the device to disable it

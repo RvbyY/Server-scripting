@@ -82,7 +82,9 @@ File server script main function
 #>
 function FileMain
 {
-    .\Hypervisor.ps1
+    $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+
+    & (Join-Path $scriptDir "Hypervisor.ps1")
     listAdminUsers
     listDisabledUsers
     ServiceServer
