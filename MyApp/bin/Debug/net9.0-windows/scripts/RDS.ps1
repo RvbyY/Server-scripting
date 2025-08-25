@@ -6,7 +6,12 @@ List admin users of the domain
 #>
 function AdminList
 {
-    $admins = Get-LocalGroupMember -Group "Administrators" | Select-Object Name
+    $admins = Get-ADGroupMember "Domain Admins" -Recursive | ForEach-Object {
+        if ($_.objectClass -eq 'user') {
+            $user = Get-ADUser $_.SamAccountName -Properties Enabled
+            if (-not $user.Enabled) { $user }
+        }
+    }
 
     "=== Admin Users ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     foreach ($admin in $admins) {
@@ -18,13 +23,17 @@ function AdminList
 .DESCRIPTION
 List admin disabled
 #>
-function AdminDisabled
-{
-    $admins = Get-LocalGroupMember -Group "Administrators" | Where-Object { $_.Enabled -eq $false } | Select-Object Name
+function AdminDisabled {
+    $admins = Get-ADGroupMember "Domain Admins" -Recursive | ForEach-Object {
+        if ($_.objectClass -eq 'user') {
+            $user = Get-ADUser $_.SamAccountName -Properties Enabled
+            if (-not $user.Enabled) { $user }
+        }
+    }
 
-    "=== Disabled Admin Users ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    "=== Disabled Domain Admin Users ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     foreach ($admin in $admins) {
-        "($admin)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+        $admin.SamAccountName | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     }
 }
 
