@@ -55,10 +55,14 @@ list all admin users of the machine
 #>
 function GetAdminUsers
 {
-    $groups = Get-LocalGroupMember -Group "Administrators"
+    $groups = Get-LocalGroupMember -Group "Administrators" -ErrorAction silentlyContinue
     $output = "=== Administrators on this device ==="
 
     $output | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    if (!$groups) {
+        "No administrators in this server" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+        return
+    }
     foreach ($group in $groups) {
         $outputString = "-> $($group.Name) [$($group.ObjectClass)]"
         $outputString | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
@@ -71,10 +75,14 @@ list all disabled admin accounts
 #>
 function DisabledadminCpte
 {
-    $admins = Get-LocalGroupMember -Group "Administrators"
+    $admins = Get-LocalGroupMember -Group "Administrators" -ErrorAction silentlyContinue
     $output = "=== Disabled administrators users ==="
 
     $output | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    if (!$admins) {
+        "No disabled administrators in this server" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+        return
+    }
     foreach ($admin in $admins) {
         if ($admin.ObjectClass -eq "User") {
             $username = ($admin.Name -split '\\')[-1]
@@ -162,13 +170,15 @@ display bitlocker w/ their status
 #>
 function IsBitlockerEnable
 {
-    $users = Get-BitLockerVolume
+    $users = Get-BitLockerVolume -ErrorAction silentlyContinue
 
     "=== Bitlockers ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     if ($users) {
         foreach ($user in $users) {
             "$($user.MountPoint) status: $($user.ProtectionStatus)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
         }
+    } else {
+        "No bitlocker volumes found" | Out-File -Filepath ".\info.txt" -Append -Encoding
     }
 }
 

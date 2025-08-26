@@ -4,9 +4,13 @@ Display SQl services
 #>
 function ListSQLServices
 {
-    $Services = Get-Service | Where-Object DisplayName -Like "SQL*"
+    $Services = Get-Service | Where-Object DisplayName -Like "SQL*" -ErrorAction silentlyContinue
 
     "=== SQL Server Services ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    if (!$Services) {
+        "No SQL server services found" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+        return
+    }
     "$($Services)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
 }
 
