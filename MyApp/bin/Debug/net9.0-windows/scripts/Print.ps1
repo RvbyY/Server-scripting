@@ -12,6 +12,10 @@ function ListUsers
     }
 
     "=== Admins Users ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    if (!$admins) {
+        "No admin user found" | Out-file -FilePath ".\info.txt" -Append -Encoding utf8
+        return
+    }
     foreach ($admin in $admins) {
         "$($admin)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     }
@@ -31,6 +35,10 @@ function DisabledAdminUser
     }
 
     "=== Disabled Admin Users ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    if (!$admins) {
+        "No disabled admin user found" | Out-file -Filepath ".\info.txt" -Append -Encoding utf8
+        return
+    }
     "$($admins)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
 }
 
@@ -40,9 +48,13 @@ List server installed service
 #>
 function InstalledServicesList
 {
-    $services = Get-Service | Sort-Object DisplayName
+    $services = Get-Service | Sort-Object DisplayName -ErrorAction silentlyContinue
 
     "=== Installed Service ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    if (!$services) {
+        "No service installed" | Out-file -FilePath ".\nfo.txt" -Append -Encoding utf8
+        return
+    }
     "$($services)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
 }
 
