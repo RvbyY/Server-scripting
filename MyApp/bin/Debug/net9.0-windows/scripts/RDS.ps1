@@ -1,5 +1,3 @@
-.\Hypervisor.ps1
-
 <#
 .DESCRIPTION
 List admin users of the domain

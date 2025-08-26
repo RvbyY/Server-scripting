@@ -1,5 +1,3 @@
-& ".\Hypervisor.ps1"
-
 <#
 .DESCRIPTION
 Test Local User Account Credentials

@@ -74,17 +74,14 @@ function SMBAuthRateLimiter
     $rateLimiter = Get-SmbServerConfiguration | Select-Object -ExpandProperty InvalidAuthenticationDelayTimeInMs
 
     "=== SMB authentication rate limiter ===" | Out-file -Filepath ".\info.txt" -Append -Encoding utf8
-    "InvalidAuthenticationDelayTimeInMs: $($rateLimiter)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
-}
+        "InvalidAuthenticationDelayTimeInMs: $($rateLimiter)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    }
 
-<#
-File server script main function
-#>
+    <#
+    File server script main function
+    #>
 function FileMain
 {
-    $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-
-    & (Join-Path $scriptDir "Hypervisor.ps1")
     listAdminUsers
     listDisabledUsers
     ServiceServer
