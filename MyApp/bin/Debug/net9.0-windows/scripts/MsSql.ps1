@@ -20,11 +20,15 @@ List Admin Users
 #>
 function ListAdminUsers
 {
-    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status
+    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status -ErrorAction silentlyContinue
     $query = "SELECT name FROM sys.server_principals WHERE is_fixed_role = 1 AND name = 'sysadmin'"
-    $adminUsers = Invoke-Sqlcmd -ServerInstance $serverInstance -Query $query
+    $adminUsers = Invoke-Sqlcmd -ServerInstance $serverInstance -Query $query -ErrorAction silentlyContinue
 
     "=== Admin Users ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    if (!$adminUsers) {
+        "No admin users found" | Out-file -FilePath -Append -Encodding utf8
+        return
+    }
     "$($adminUsers)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
 }
 
@@ -33,11 +37,15 @@ function ListAdminUsers
 Display and list disabled admin Users#>
 function DisabledUsers
 {
-    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status
+    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status -ErrorAction silentlyContinue
     $query = "SELECT name, is_disabled FROM sys.server_principals WHERE is_fixed_role = 1 AND name = 'sysadmin' AND is_disabled = 1"
-    $disabledUsers = Invoke-Sqlcmd -ServerInstance $serverInstance -Query $query
+    $disabledUsers = Invoke-Sqlcmd -ServerInstance $serverInstance -Query $query -ErrorAction silentlyContinue
 
     "=== Disabled Admin Users ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    if (!$disabledUsers) {
+        "No disabled admin users found" | Out-file -Filepath -Append -Encoding utf8
+        return
+    }
     "$($disabledUsers)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
 }
 
@@ -47,14 +55,18 @@ See last Users login
 #>
 function LastUsersLog
 {
-    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status
+    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status -ErrorAction silentlyContinue
     $query = "SELECT p.name, p.type_desc, s.last_login
         FROM sys.server_principals p
         LEFT JOIN sys.syslogins s ON p.sid = s.sid
         WHERE p.is_fixed_role = 1 AND p.name = 'sysadmin'"
-    $adminUserLog = Invoke-Sqlcmd -ServerInstance $serverInstance -Query $query
+    $adminUserLog = Invoke-Sqlcmd -ServerInstance $serverInstance -Query $query -ErrorAction silentlyContinue
 
     "=== Admin Last Login ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    if (!$adminUserLog) {
+        "No last login admin log found" | Out-file -Append -Encoding utf8
+        return
+    }
     "$($adminUserLog)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
 }
 
@@ -64,14 +76,18 @@ Display last password change
 #>
 function LastPwdChange
 {
-    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status
+    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status -ErrorAction silentlyContinue
     $query = "SELECT p.name, p.type_desc, s.password_changed
         FROM sys.server_principals p
         LEFT JOIN sys.sql_logins s ON p.sid = s.sid
         WHERE p.is_fixed_role = 1 AND p.name = 'sysadmin'"
-    $adminLastPwd = Invoke-Sqlcmd -ServerInstance $serverInstance -Query $query
+    $adminLastPwd = Invoke-Sqlcmd -ServerInstance $serverInstance -Query $query -ErrorAction silentlyContinue
 
     "=== Admin Last Password change ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    if (!$adminLastPwd) {
+        "No admin last password change log found" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+        return
+    }
     "$($adminLastPwd)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
 }
 
@@ -81,9 +97,13 @@ List Server Service
 #>
 function ListServerService
 {
-    $services = Get-Service | Where-Object { $_.DisplayName -like 'SQL Server*' } | Select-Object DisplayName, Status, Name
+    $services = Get-Service | Where-Object { $_.DisplayName -like 'SQL Server*' } | Select-Object DisplayName, Status, Name -ErrorAction silentlyContinue
 
     "=== SQL Installed Service ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+    if (!$services) {
+        "No SQL installed service found" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+        return
+    }
     "$($services)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
 }
 
@@ -93,9 +113,13 @@ List Disabled Spooler
 #>
 function IsSpoolerEnable
 {
-    $spoolers = Get-Service -Name Spooler | Select-Object DisplayName, Status
+    $spoolers = Get-Service -Name Spooler | Select-Object DisplayName, Status -ErrorAction silentlyContinue
 
     "=== Disabled Spoolers ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    if (!$spoolers) {
+        "No disabled spoolers found" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+        return
+    }
     foreach ($spooler in $spoolers) {
         if ($spooler.StartType -eq 'Disabled') {
             "$($spooler.Name): $($spooler.Status)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
@@ -109,11 +133,15 @@ Local User SQL
 #>
 function LocalUserSql
 {
-    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status
+    $serverInstance = Get-Service | Where-Object { $_.Name -like 'MSSQL*' } | Select-Object DisplayName, Status -ErrorAction silentlyContinue
     $query = "SELECT name, type_desc FROM sys.database_principals WHERE type IN ('S', 'U') AND sid 0x0"
-    $localUsers = Invoke-Sqlcmd -ServerInstance $serverInstance -Database 'master' -Query $query
+    $localUsers = Invoke-Sqlcmd -ServerInstance $serverInstance -Database 'master' -Query $query -ErrorAction silentlyContinue
 
     "=== Local Users SQL ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    if (!$localUsers) {
+        "No SQL local users found" | Out-File -Filepath ".\info.txt" -Append -Encoding utf_
+        return
+    }
     "$($localusers)" | Out-File -FilePath ".\info.txt" -Append -Enconding utf8
 }
 
@@ -140,9 +168,13 @@ Check Password Complexity of each admin user
 #>
 function CheckPwdComplexity
 {
-    $admins = Get-LocalUser | Where-Object { $_.Name -eq "Administrator"}
+    $admins = Get-LocalUser | Where-Object { $_.Name -eq "Administrator"} -ErrorAction silentlyContinue
 
     "=== Admins Paswword Complexity ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+    if (!$admins) {
+        "No complexity log found" | Out-file -Filepath ".\info.txt" -Append -Encoding utf8
+        return
+    }
     foreach ($admin in $admins) {
         "$($admin.Name): $($admin.PasswordComplexity)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
     }
