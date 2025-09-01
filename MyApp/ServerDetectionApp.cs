@@ -59,6 +59,7 @@ namespace ServerDetectionApp
             string selectedServer = comboBoxServerType.SelectedItem?.ToString();
             string? scriptPath;
             string result;
+            string f = @".\info.txt";
 
             if (string.IsNullOrEmpty(selectedServer))
             {
@@ -68,6 +69,7 @@ namespace ServerDetectionApp
             scriptPath = DetectServer(selectedServer);
             if (!string.IsNullOrEmpty(scriptPath))
             {
+                File.Exists(f) ? File.Delete(f) : File.Create(f).Close();
                 if (!scriptPath.Equals(Path.Combine("scripts", "Hypervisor.ps1")))
                     RunScript(Path.Combine("scripts", "Hypervisor.ps1"));
                 result = RunScript(scriptPath);
