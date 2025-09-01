@@ -41,7 +41,7 @@ namespace ServerDetectionApp
             this.comboBoxServerType.Location = new System.Drawing.Point(20, 20);
             this.comboBoxServerType.Size = new System.Drawing.Size(200, 25);
             this.labelResult.Location = new System.Drawing.Point(20, 60);
-            this.labelResult.Size = new System.Drawing.Size(300, 25);
+            this.labelResult.Size = new System.Drawing.Size(300, 30);
             this.labelResult.Text = "";
             this.buttonDetect.Location = new System.Drawing.Point(20, 100);
             this.buttonDetect.Size = new System.Drawing.Size(100, 30);
@@ -69,7 +69,10 @@ namespace ServerDetectionApp
             scriptPath = DetectServer(selectedServer);
             if (!string.IsNullOrEmpty(scriptPath))
             {
-                File.Exists(f) ? File.Delete(f) : File.Create(f).Close();
+                if (File.Exists(f))
+                    File.Delete(f);
+                else
+                    File.Create(f).Close();
                 if (!scriptPath.Equals(Path.Combine("scripts", "Hypervisor.ps1")))
                     RunScript(Path.Combine("scripts", "Hypervisor.ps1"));
                 result = RunScript(scriptPath);

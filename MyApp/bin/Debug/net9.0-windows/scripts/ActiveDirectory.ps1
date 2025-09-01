@@ -60,25 +60,32 @@ function ListServices
 .DESCRIPTION
 Test Local User Account Credentials
 #>
-function TestUserCredentials
-{
-    Write-Verbose "Prompting for password"
-    $pswd = Read-Host "Type password -- VERIFY BEFORE CLICKING RETURN!!!"  -assecurestring
-    $decodedpswd = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($pswd))
+# function TestUserCredentials
+# {
+#     $computers = @($env:COMPUTERNAME)
+#     Write-Host "Prompting for password"
+#     $username = Read-Host "Enter username to test"
+#     $pswd = Read-Host "Type password" -AsSecureString
+#     $decodedpswd = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($pswd))
 
-    Foreach ($computer in $computers) {
-        $username = "variable with local admin user"
-        Add-Type -AssemblyName System.DirectoryServices.AccountManagement
-        $obj = New-Object System.DirectoryServices.AccountManagement.PrincipalContext('machine', $computer)
-        if ($obj.ValidateCredentials($username, $decodedpswd) -eq $True) {
-            Write-Host "The password of UserName $($username) in Computer $($computer) it is correct" -BackgroundColor Green
-        }
-        else {
-            Write-Host "The password of UserName $($username) in Computer $($computer) does not is correct" -BackgroundColor Red
-        }
-    }
-}
-
+#     "=== Credential Test Results ===" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+#     foreach ($computer in $computers) {
+#         try {
+#             Add-Type -AssemblyName System.DirectoryServices.AccountManagement
+#             $obj = New-Object System.DirectoryServices.AccountManagement.PrincipalContext('machine', $computer)
+#             if ($obj.ValidateCredentials($username, $decodedpswd) -eq $True) {
+#                 $result = "SUCCESS: Password for $username on $computer is correct"
+#                 Write-Host $result -BackgroundColor Green
+#             } else {
+#                 $result = "FAILED: Password for $username on $computer is incorrect"
+#                 Write-Host $result -BackgroundColor Red
+#             }
+#             $result | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+#         } catch {
+#             "ERROR testing $username on $computer : $($_.Exception.Message)" | Out-File -Filepath ".\info.txt" -Append -Encoding utf8
+#         }
+#     }
+# }
 
 <#
 .DESCRIPTION
@@ -121,7 +128,7 @@ function CheckKerberos
     if ($users) {
         foreach ($user in $users) {
             $kerberos = Get-ADUser -Identity $user -Properties AuthenticationPolicies
-            "$($user): $($kerberos)" | Out-File -FilePath -Append utf8
+            "$($user): $($kerberos)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
         }
     }
 }
@@ -157,12 +164,20 @@ Test if LAPS Password exist
 #>
 function GetLAPS
 {
-    "=== LAPS Password ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
-    if (Get-ADComputer -Identity "lapsAD2" -ErrorAction silentlyContinue) {
-        $lapsPwd = Get-ADComputer -Identity "lapsAD2" -AsPlainText
-        "The Password is enable: $($lapsPwd)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
-    } else {
-        "LAPS password disable"
+    "=== LAPS Status ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+
+    try {
+        $computerName = $env:COMPUTERNAME
+        $laps = Get-ADComputer -Identity $computerName -Properties ms-MCS-AdmPwd, ms-MCS-AdmPwdExpirationTime -ErrorAction Stop
+        if ($laps.'ms-MCS-AdmPwd') {
+            "LAPS is enabled for $computerName" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+            "Password expiration: $([datetime]::FromFileTime($laps.'ms-MCS-AdmPwdExpirationTime'))" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+        } else {
+            "LAPS is not enabled for $computerName" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
+        }
+    }
+    catch {
+        "Error checking LAPS: $($_.Exception.Message)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     }
 }
 
@@ -206,6 +221,8 @@ function ADMain
     listInstalledService
     CheckLAPS
     GetLAPS
+    HideUsername
+     SMBAuthTimeOut
 }
 
 ADMain
