@@ -151,19 +151,6 @@ Check if LAPS is enabled
 #>
 function CheckLAPS
 {
-    $computer = Get-ComputerInfo
-
-    "=== LAPS ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
-    $laps = Get-ADComputer -Identity $computer.CSName -Properties ms-MCS-AdmPwd, ms-MCS-AdmPwdExpirationTime
-    "$($laps)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
-}
-
-<#
-.DESCRIPTION
-Test if LAPS Password exist
-#>
-function GetLAPS
-{
     "=== LAPS Status ===" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
 
     try {
@@ -180,6 +167,7 @@ function GetLAPS
         "Error checking LAPS: $($_.Exception.Message)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
     }
 }
+
 
 <#
 .DESCRIPTION
@@ -220,7 +208,6 @@ function ADMain
     CheckKerberos
     listInstalledService
     CheckLAPS
-    GetLAPS
     HideUsername
      SMBAuthTimeOut
 }
