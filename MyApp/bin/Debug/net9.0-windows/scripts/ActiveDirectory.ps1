@@ -101,7 +101,7 @@ function CheckSpooler
         if ($Spooler.StartType -eq 'Disabled') {
             "$($PrintName.Name): $($Spooler.Status)" | Out-File -FilePath ".\info.txt" -Append -Encoding utf8
         }
-    }
+    }...............................................
 }
 
 <#
