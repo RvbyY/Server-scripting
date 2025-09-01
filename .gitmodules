@@ -1,0 +1,3 @@
+[submodule "ServerApp"]
+	path = ServerApp
+	url = git@github.com:RvbyY/ServerApp.git
