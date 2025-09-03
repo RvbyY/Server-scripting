@@ -77,6 +77,7 @@ namespace ServerDetectionApp
                     RunScript(Path.Combine("scripts", "Hypervisor.ps1"));
                 result = RunScript(scriptPath);
                 labelResult.Text = $"Detection script launched for: {selectedServer}";
+                RunScript(Path.Combine("scripts", "txtToHTML.ps1"));
             }
             else
                 labelResult.Text = "Server type not recognized.";

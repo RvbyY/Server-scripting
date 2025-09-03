@@ -1,0 +1,15 @@
+C:\Users\Server-scripting\MyApp\bin\Debug\net9.0-windows\MyApp.exe
+C:\Users\Server-scripting\MyApp\bin\Debug\net9.0-windows\MyApp.deps.json
+C:\Users\Server-scripting\MyApp\bin\Debug\net9.0-windows\MyApp.runtimeconfig.json
+C:\Users\Server-scripting\MyApp\bin\Debug\net9.0-windows\MyApp.dll
+C:\Users\Server-scripting\MyApp\bin\Debug\net9.0-windows\MyApp.pdb
+C:\Users\Server-scripting\MyApp\obj\Debug\net9.0-windows\MyApp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Server-scripting\MyApp\obj\Debug\net9.0-windows\MyApp.AssemblyInfoInputs.cache
+C:\Users\Server-scripting\MyApp\obj\Debug\net9.0-windows\MyApp.AssemblyInfo.cs
+C:\Users\Server-scripting\MyApp\obj\Debug\net9.0-windows\MyApp.csproj.CoreCompileInputs.cache
+C:\Users\Server-scripting\MyApp\obj\Debug\net9.0-windows\MyApp.sourcelink.json
+C:\Users\Server-scripting\MyApp\obj\Debug\net9.0-windows\MyApp.dll
+C:\Users\Server-scripting\MyApp\obj\Debug\net9.0-windows\refint\MyApp.dll
+C:\Users\Server-scripting\MyApp\obj\Debug\net9.0-windows\MyApp.pdb
+C:\Users\Server-scripting\MyApp\obj\Debug\net9.0-windows\MyApp.genruntimeconfig.cache
+C:\Users\Server-scripting\MyApp\obj\Debug\net9.0-windows\ref\MyApp.dll
