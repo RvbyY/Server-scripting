@@ -60,6 +60,7 @@ namespace ServerDetectionApp
             string? scriptPath;
             string result;
             string f = @".\info.txt";
+            string f2 = @".\server-report.html";
 
             if (string.IsNullOrEmpty(selectedServer))
             {
@@ -73,6 +74,10 @@ namespace ServerDetectionApp
                     File.Delete(f);
                 else
                     File.Create(f).Close();
+                if (File.Exists(f2))
+                    File.Delete(f2);
+                else
+                    File.Create(f2).Close();
                 if (!scriptPath.Equals(Path.Combine("scripts", "Hypervisor.ps1")))
                     RunScript(Path.Combine("scripts", "Hypervisor.ps1"));
                 result = RunScript(scriptPath);
