@@ -1,0 +1,2 @@
+C:\Users\basst\OneDrive\Documents\GitHub\Server-scripting\MyApp\single-file\MyApp.pdb
+C:\Users\basst\OneDrive\Documents\GitHub\Server-scripting\MyApp\single-file\MyApp.exe
