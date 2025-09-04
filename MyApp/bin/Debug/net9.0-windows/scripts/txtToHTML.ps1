@@ -1,8 +1,8 @@
 [CmdletBinding()]
 
 param (
-    [string]$InputFile = "..\info.txt",
-    [string]$OutputFile = "..\server-report.html"
+    [string]$InputFile = ".\info.txt",
+    [string]$OutputFile = ".\server-report.html"
 )
 
 function txtToHTML {
@@ -23,7 +23,7 @@ function txtToHTML {
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+            line-height: 1.6;ls
             margin: 0;
             padding: 20px;
             background-color: #f5f5f5;
@@ -38,7 +38,7 @@ function txtToHTML {
         }
         h1 {
             color: #2c3e50;
-            border-bottom: 3px solid #3498db;
+            border-bottom: 3px solidrgb(177, 53, 123);
             padding-bottom: 10px;
         }
         .metadata {
@@ -50,11 +50,11 @@ function txtToHTML {
         .section {
             margin: 20px 0;
             padding: 15px;
-            border-left: 4px solid #3498db;
+            border-left: 4px solidrgb(163, 37, 159);
             background: #f8f9fa;
         }
         .section h3 {
-            color: #2980b9;
+            color:rgb(168, 34, 119);
             margin-top: 0;
         }
         pre {
@@ -73,14 +73,14 @@ function txtToHTML {
 </head>
 <body>
     <div class="container">
-        <h1>🖥️ Server Detection Report</h1>
+        <h1>Server Detection Report</h1>
         <div class="metadata">
             <strong>Generated:</strong> $timestamp<br>
             <strong>Server:</strong> $env:COMPUTERNAME<br>
             <strong>User:</strong> $env:USERNAME
         </div>
         <div class="section">
-            <h3>📋 Detection Results</h3>
+            <h3>Detection Results</h3>
             <pre>$content</pre>
         </div>
     </div>
